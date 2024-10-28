@@ -137,6 +137,7 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: TextField(
+                    maxLength: 50,
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.cancel_outlined),

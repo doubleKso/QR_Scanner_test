@@ -244,6 +244,9 @@ class _ReadQrCodesState extends State<ReadQrCodes> {
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(
                                               const SnackBar(
+                                                  backgroundColor: Colors.green,
+                                                  duration:
+                                                      Duration(seconds: 1),
                                                   content: Text(
                                                       "QR code deleted successfully.")),
                                             );
@@ -253,6 +256,9 @@ class _ReadQrCodesState extends State<ReadQrCodes> {
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(
                                               SnackBar(
+                                                  backgroundColor: Colors.red,
+                                                  duration:
+                                                      Duration(seconds: 1),
                                                   content: Text(
                                                       "Error deleting QR code: $e")),
                                             );

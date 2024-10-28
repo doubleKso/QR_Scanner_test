@@ -29,9 +29,12 @@ Widget buildFilledButton({
       backgroundColor: color,
     ),
     onPressed: onPressed,
-    child: Text(
-      label,
-      style: const TextStyle(fontWeight: FontWeight.bold),
+    child: Padding(
+      padding: const EdgeInsets.all(25.0),
+      child: Text(
+        label,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      ),
     ),
   );
 }

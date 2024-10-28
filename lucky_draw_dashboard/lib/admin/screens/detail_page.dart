@@ -53,115 +53,121 @@ class DetailPage extends StatelessWidget {
           DateTime createdDate = data['timestamp'].toDate();
           DateTime expiredDate = data['expiredDate'].toDate();
 
-          return Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: Card(
-                elevation: 4.0,
-                color: Colors.red[50],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0), // Rounded corners
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.all(16.0), // Inner padding for the card
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        QrImageView(
-                          data: data['data'],
-                          version: QrVersions.auto,
-                          embeddedImage: const AssetImage(
-                              'assets/images/AxraWithBackground.jpg'),
-                          embeddedImageStyle:
-                              const QrEmbeddedImageStyle(size: Size(30, 30)),
-                          size: 200,
-                          backgroundColor: Colors.white,
-                        ),
-                        const SizedBox(height: 20),
-                        const Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Winner: ",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold), // Bold text
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            data['winner'] != null ? data['winner'] : '-',
-                          ),
-                        ),
-
-                        // const SizedBox(height: 20),
-                        const Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Created Date: ",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold), // Bold text
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            DateFormat.yMMMMEEEEd().format(createdDate),
-                          ),
-                        ),
-                        const SizedBox(height: 10), // Spacing
-                        const Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Prize: ",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold), // Bold text
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(data['prize']),
-                        ),
-                        const SizedBox(height: 10), // Spacing
-                        const Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Expired Date: ",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold), // Bold text
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            DateFormat.yMMMMEEEEd().format(expiredDate),
-                          ),
-                        ),
-                        const SizedBox(height: 10), // Spacing
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            data['scannedDate'] != null
-                                ? "Scanned Date: "
-                                : 'Scanned Date: -',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold), // Bold text
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            data['scannedDate'] != null
-                                ? DateFormat.yMMMMEEEEd()
-                                    .format(data['scannedDate'].toDate())
-                                : '-',
-                          ),
-                        ),
-                      ],
+          return Center(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.33,
+              child: Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: Card(
+                    elevation: 4.0,
+                    color: Colors.red[50],
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(20.0), // Rounded corners
                     ),
-                  ),
-                ),
-              ));
+                    child: Padding(
+                      padding: const EdgeInsets.all(
+                          16.0), // Inner padding for the card
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            QrImageView(
+                              data: data['data'],
+                              version: QrVersions.auto,
+                              embeddedImage: const AssetImage(
+                                  'assets/images/AxraWithBackground.jpg'),
+                              embeddedImageStyle: const QrEmbeddedImageStyle(
+                                  size: Size(30, 30)),
+                              size: 200,
+                              backgroundColor: Colors.white,
+                            ),
+                            const SizedBox(height: 20),
+                            const Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Winner: ",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold), // Bold text
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                data['winner'] != null ? data['winner'] : '-',
+                              ),
+                            ),
+
+                            // const SizedBox(height: 20),
+                            const Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Created Date: ",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold), // Bold text
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                DateFormat.yMMMMEEEEd().format(createdDate),
+                              ),
+                            ),
+                            const SizedBox(height: 10), // Spacing
+                            const Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Prize: ",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold), // Bold text
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(data['prize']),
+                            ),
+                            const SizedBox(height: 10), // Spacing
+                            const Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Expired Date: ",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold), // Bold text
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                DateFormat.yMMMMEEEEd().format(expiredDate),
+                              ),
+                            ),
+                            const SizedBox(height: 10), // Spacing
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                data['scannedDate'] != null
+                                    ? "Scanned Date: "
+                                    : 'Scanned Date: -',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold), // Bold text
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                data['scannedDate'] != null
+                                    ? DateFormat.yMMMMEEEEd()
+                                        .format(data['scannedDate'].toDate())
+                                    : '-',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )),
+            ),
+          );
         },
       ),
     );

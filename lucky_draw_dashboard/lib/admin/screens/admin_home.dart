@@ -31,7 +31,7 @@ class _AdminHomeState extends State<AdminHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.red[400],
+        backgroundColor: Colors.red,
         title: const Text(
           'Admin Dashboard',
           style: TextStyle(fontSize: 15, color: Colors.white),

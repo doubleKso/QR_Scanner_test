@@ -34,8 +34,8 @@ class _QrScreensState extends State<QrScreens> {
               //   },
               //   child: const Text('Create QR Codes'),
               // ),
-              buildOutlinedButton(
-                  label: "Create QR Codes",
+              buildFilledButton(
+                  label: ("Create QR Codes"),
                   color: Colors.red,
                   onPressed: () {
                     Navigator.push(
@@ -47,7 +47,7 @@ class _QrScreensState extends State<QrScreens> {
               SizedBox(
                 height: 10,
               ),
-              buildOutlinedButton(
+              buildFilledButton(
                   label: "Read QR Codes",
                   color: Colors.red,
                   onPressed: () {
