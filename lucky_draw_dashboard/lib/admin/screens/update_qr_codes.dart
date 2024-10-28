@@ -106,7 +106,13 @@ class _UpdateQrCodePageState extends State<UpdateQrCodes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        title: const Text(
+          "Qr Codes",
+          style: TextStyle(fontSize: 15, color: Colors.white),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: SizedBox(

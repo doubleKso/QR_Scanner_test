@@ -30,7 +30,7 @@ class DetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(
+          title: SelectableText(
         "QR Code ID: " + documentId,
         style: TextStyle(fontSize: 15),
       )),

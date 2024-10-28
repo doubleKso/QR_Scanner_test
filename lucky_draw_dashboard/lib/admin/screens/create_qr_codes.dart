@@ -94,7 +94,13 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        title: const Text(
+          "Create New QR Codes",
+          style: TextStyle(fontSize: 15, color: Colors.white),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: SizedBox(

@@ -57,9 +57,10 @@ class _ReadQrCodesState extends State<ReadQrCodes> {
     return Center(
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.red,
           title: const Text(
             "Qr Codes",
-            style: TextStyle(fontSize: 15),
+            style: TextStyle(fontSize: 15, color: Colors.white),
           ),
         ),
         body: Container(
