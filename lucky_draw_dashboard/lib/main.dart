@@ -1,10 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lucky_draw_dashboard/firebase_options.dart';
 import 'package:lucky_draw_dashboard/pages/dashboard_page.dart';
 import 'package:lucky_draw_dashboard/pages/lucky_draw_page.dart';
 import 'package:lucky_draw_dashboard/pages/user_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
