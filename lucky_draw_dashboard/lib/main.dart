@@ -1,10 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:lucky_draw_dashboard/admin/screens/admin_home.dart';
+import 'package:lucky_draw_dashboard/admin/screens/read_qr_codes.dart';
 import 'package:lucky_draw_dashboard/firebase_options.dart';
-// import 'package:luckydraw_test/authentication/auth_check.dart';/
-// import 'package:luckydraw_test/authentication/auth_login.dart';
-// import 'package:luckydraw_test/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,9 +15,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: AdminHome(),
+      // home: AdminHome(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => AdminHome(), // Your home page
+        '/readQRCodes': (context) =>
+            ReadQrCodes(), // Define your read QR codes page route
+        // Add other routes here
+      },
     );
   }
 }

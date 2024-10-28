@@ -2,38 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:lucky_draw_dashboard/admin/services/firestore_service.dart';
 import 'package:lucky_draw_dashboard/widgets/widgets.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:uuid/uuid.dart';
 
-class CreateQrCodes extends StatefulWidget {
-  const CreateQrCodes({super.key});
+class UpdateQrCodes extends StatefulWidget {
+  final String qrCodeId; // Pass the QR code ID to this page
+
+  const UpdateQrCodes({super.key, required this.qrCodeId});
 
   @override
-  State<CreateQrCodes> createState() => _CreateQrCodesState();
+  State<UpdateQrCodes> createState() => _UpdateQrCodePageState();
 }
 
-class _CreateQrCodesState extends State<CreateQrCodes> {
+class _UpdateQrCodePageState extends State<UpdateQrCodes> {
   final FirestoreService firestoreService = FirestoreService();
   final TextEditingController _qrController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _prizeController = TextEditingController();
+  // final TextEditingController _statusController = TextEditingController();
+  // final TextEditingController _scannedDateController = TextEditingController();
   String? errorMessage;
-  var uuid = const Uuid();
-  bool isLoading = false; // New variable to track loading state
-
-  String qrData = "";
-
-  void _changeQRCode() {
-    setState(() {
-      String newUuid = uuid.v4(); // Generate a new UUID
-      _qrController.text = newUuid;
-      qrData = _qrController.text;
-    });
-  }
+  bool isLoading = true; // Track loading state
+  String qrData = ""; // Store QR code data
 
   @override
   void initState() {
     super.initState();
-    _changeQRCode(); // Generate the initial UUID when the widget is created
+    _loadQrCodeData(); // Load data on initialization
+  }
+
+  Future<void> _loadQrCodeData() async {
+    try {
+      // Fetch QR code data using the ID
+      final qrDataMap = await firestoreService.getQrCodeById(widget.qrCodeId);
+      setState(() {
+        _qrController.text = qrDataMap['data'];
+        _prizeController.text = qrDataMap['prize'];
+        _dateController.text =
+            qrDataMap['expiredDate'].toDate().toString().split(" ")[0];
+        qrData = _qrController.text; // Set the QR code data for displaying
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false; // Set loading to false after fetching
+      });
+    }
   }
 
   Future<void> _selectDate() async {
@@ -49,31 +64,28 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
     }
   }
 
-  Future<void> _submitQrCode() async {
+  Future<void> _updateQrCode() async {
     setState(() {
       isLoading = true;
     });
 
     try {
-      await firestoreService.addQrCode(
+      await firestoreService.updateQrCode(
         _qrController.text,
         _prizeController.text,
         _dateController.text,
+        widget.qrCodeId, // Pass the ID to the update method
       );
 
-      _changeQRCode();
-      _dateController.clear();
-      _prizeController.clear();
-
-      setState(() {
-        errorMessage = null;
-      });
-
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("QR code added successfully!"),
+        content: Text("QR code updated successfully!"),
         backgroundColor: Colors.green,
         duration: Duration(seconds: 1),
       ));
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      Navigator.pushReplacementNamed(context, '/readQRCodes');
     } catch (e) {
       setState(() {
         errorMessage = e.toString();
@@ -82,7 +94,7 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("$errorMessage"),
         backgroundColor: Colors.red,
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
       ));
     } finally {
       setState(() {
@@ -98,8 +110,7 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
       body: SingleChildScrollView(
         child: Center(
           child: SizedBox(
-            width: MediaQuery.of(context).size.width *
-                0.33, // One-third of the screen width
+            width: MediaQuery.of(context).size.width * 0.33,
             child: Column(
               children: [
                 const SizedBox(height: 50),
@@ -175,9 +186,9 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: buildFilledButton(
-                    label: "Add QR Code",
+                    label: "Update QR Code",
                     color: Colors.red,
-                    onPressed: isLoading ? null : _submitQrCode,
+                    onPressed: isLoading ? null : _updateQrCode,
                   ),
                 ),
                 if (isLoading)
