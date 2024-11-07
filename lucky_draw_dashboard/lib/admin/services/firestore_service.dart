@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirestoreService {
   final CollectionReference qrCodes =
       FirebaseFirestore.instance.collection('QrCodes');
+  final CollectionReference users =
+      FirebaseFirestore.instance.collection('Users');
 
   Future<void> addQrCode(String qrData, String prize, String expiredDate) {
     try {
@@ -74,12 +76,49 @@ class FirestoreService {
     }
   }
 
+  Future<Map<String, dynamic>> getUserById(String id) async {
+    try {
+      DocumentSnapshot snapshot = await users.doc(id).get();
+      if (snapshot.exists) {
+        return snapshot.data() as Map<String, dynamic>;
+      } else {
+        throw Exception("QR code not found");
+      }
+    } catch (e) {
+      throw Exception("Failed to fetch QR code: $e");
+    }
+  }
+
   Future<void> deleteQrCode(String documentId) async {
     try {
       await qrCodes.doc(documentId).delete();
       print("Document with ID: $documentId deleted successfully.");
     } catch (e) {
       print("Error deleting document: $e");
+    }
+  }
+
+  Future<void> deleteUser(String documentId) async {
+    try {
+      await users.doc(documentId).delete();
+      print("Document with ID: $documentId deleted successfully.");
+    } catch (e) {
+      print("Error deleting document: $e");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchUsers() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await users.orderBy('timestamp', descending: true).get();
+      return querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+    } catch (e) {
+      print("Error fetching data: $e");
+      return [];
     }
   }
 }

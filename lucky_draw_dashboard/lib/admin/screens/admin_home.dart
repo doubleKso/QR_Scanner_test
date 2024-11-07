@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucky_draw_dashboard/admin/screens/account_screen.dart';
 import 'package:lucky_draw_dashboard/admin/screens/qr_screen.dart';
-import 'package:lucky_draw_dashboard/admin/screens/users_screen.dart';
+import 'package:lucky_draw_dashboard/admin/screens/read_users_screen.dart';
 
 class AdminHome extends StatefulWidget {
   const AdminHome({super.key});

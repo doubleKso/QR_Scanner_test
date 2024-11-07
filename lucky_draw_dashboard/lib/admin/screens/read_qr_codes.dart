@@ -64,6 +64,7 @@ class _ReadQrCodesState extends State<ReadQrCodes> {
           ),
         ),
         body: Container(
+          width: double.infinity,
           padding: const EdgeInsets.all(25.0),
           child: isLoading
               ? const Center(
@@ -179,18 +180,29 @@ class _ReadQrCodesState extends State<ReadQrCodes> {
                                 ),
                               ),
                               DataCell(Text(item['prize'] ?? 'N/A')),
-                              DataCell(Text(
-                                item['availability'] == true
-                                    ? "Available"
-                                    : (item['availability'] == false
-                                        ? "Expired or Scanned"
-                                        : "N/A"),
-                                style: TextStyle(
-                                  color: item['availability'] == true
-                                      ? Colors.green
-                                      : Colors.red,
+                              DataCell(
+                                Text(
+                                  item['winner'] != null
+                                      ? "Scanned"
+                                      : (item['expiredDate'] != null &&
+                                              item['expiredDate']
+                                                  .toDate()
+                                                  .isBefore(DateTime.now())
+                                          ? "Expired"
+                                          : "Available"),
+                                  style: TextStyle(
+                                    color: item['winner'] != null
+                                        ? Colors.blue // Color for scanned
+                                        : (item['expiredDate'] != null &&
+                                                item['expiredDate']
+                                                    .toDate()
+                                                    .isBefore(DateTime.now())
+                                            ? Colors.red // Color for expired
+                                            : Colors
+                                                .green), // Color for available
+                                  ),
                                 ),
-                              )),
+                              ),
                               DataCell(
                                 item['expiredDate'] != null
                                     ? Text(DateFormat.yMMMMEEEEd()

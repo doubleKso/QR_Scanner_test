@@ -4,10 +4,6 @@ import 'package:lucky_draw_dashboard/admin/screens/create_qr_codes.dart';
 import 'package:lucky_draw_dashboard/admin/screens/read_qr_codes.dart';
 import 'package:lucky_draw_dashboard/widgets/widgets.dart';
 
-// import 'package:luckydraw_test/admin/services/firestore_service.dart';
-// import 'package:qr_flutter/qr_flutter.dart';
-// import 'package:uuid/uuid.dart';
-
 class QrScreens extends StatefulWidget {
   const QrScreens({super.key});
   @override
