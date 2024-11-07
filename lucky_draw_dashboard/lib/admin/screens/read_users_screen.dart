@@ -167,27 +167,62 @@ class _UsersScreenState extends State<UsersScreen> {
                                           Icons.delete_forever_outlined,
                                           color: Colors.redAccent),
                                       onPressed: () async {
-                                        try {
-                                          await _firestoreService
-                                              .deleteUser(user["id"]!);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
+                                        // Show confirmation dialog
+                                        final shouldDelete =
+                                            await showDialog<bool>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text("Delete User"),
+                                              content: const Text(
+                                                  "Are you sure you want to delete this user?"),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pop(false);
+                                                  },
+                                                  child: const Text("Cancel"),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pop(true);
+                                                  },
+                                                  child: const Text("Delete",
+                                                      style: TextStyle(
+                                                          color: Colors.red)),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+
+                                        if (shouldDelete == true) {
+                                          try {
+                                            await _firestoreService
+                                                .deleteUser(user["id"]!);
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
                                                 backgroundColor: Colors.green,
                                                 duration: Duration(seconds: 1),
                                                 content: Text(
-                                                    "User deleted successfully.")),
-                                          );
-                                          _fetchUsers(); // Refresh the list
-                                        } catch (e) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
+                                                    "User deleted successfully."),
+                                              ),
+                                            );
+                                            _fetchUsers(); // Refresh the list
+                                          } catch (e) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
                                                 backgroundColor: Colors.red,
                                                 duration: Duration(seconds: 1),
                                                 content: Text(
-                                                    "Error deleting user: $e")),
-                                          );
+                                                    "Error deleting user: $e"),
+                                              ),
+                                            );
+                                          }
                                         }
                                       },
                                     ),

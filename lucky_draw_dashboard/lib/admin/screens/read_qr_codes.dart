@@ -250,30 +250,64 @@ class _ReadQrCodesState extends State<ReadQrCodes> {
                                             Icons.delete_forever_outlined,
                                             color: Colors.redAccent),
                                         onPressed: () async {
-                                          try {
-                                            await _firestoreService
-                                                .deleteQrCode(item["id"]);
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
+                                          final shouldDelete =
+                                              await showDialog<bool>(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: const Text(
+                                                    "Delete QR Code"),
+                                                content: const Text(
+                                                    "Are you sure you want to delete this QR code?"),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () => Navigator
+                                                            .of(context)
+                                                        .pop(
+                                                            false), // Return false
+                                                    child: const Text("Cancel"),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () => Navigator
+                                                            .of(context)
+                                                        .pop(
+                                                            true), // Return true
+                                                    child: const Text("Delete",
+                                                        style: TextStyle(
+                                                            color: Colors.red)),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+
+                                          if (shouldDelete == true) {
+                                            try {
+                                              await _firestoreService
+                                                  .deleteQrCode(item["id"]);
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
                                                   backgroundColor: Colors.green,
                                                   duration:
                                                       Duration(seconds: 1),
                                                   content: Text(
-                                                      "QR code deleted successfully.")),
-                                            );
-                                            _fetchQrCodes(); // Refresh the list
-                                          } catch (e) {
-                                            // Show an error message if deletion fails
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
+                                                      "QR code deleted successfully."),
+                                                ),
+                                              );
+                                              _fetchQrCodes(); // Refresh the list
+                                            } catch (e) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
                                                   backgroundColor: Colors.red,
                                                   duration:
                                                       Duration(seconds: 1),
                                                   content: Text(
-                                                      "Error deleting QR code: $e")),
-                                            );
+                                                      "Error deleting QR code: $e"),
+                                                ),
+                                              );
+                                            }
                                           }
                                         },
                                       ),
