@@ -19,6 +19,7 @@ class _UpdateQrCodePageState extends State<UpdateQrCodes> {
   final TextEditingController _prizeController = TextEditingController();
   // final TextEditingController _statusController = TextEditingController();
   // final TextEditingController _scannedDateController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
   String? errorMessage;
   bool isLoading = true; // Track loading state
   String qrData = ""; // Store QR code data
@@ -36,9 +37,11 @@ class _UpdateQrCodePageState extends State<UpdateQrCodes> {
       setState(() {
         _qrController.text = qrDataMap['data'];
         _prizeController.text = qrDataMap['prize'];
-        _dateController.text =
-            qrDataMap['expiredDate'].toDate().toString().split(" ")[0];
-        qrData = _qrController.text; // Set the QR code data for displaying
+        DateTime expiredDateTime = qrDataMap['expiredDate'].toDate();
+        _dateController.text = expiredDateTime.toString().split(" ")[0];
+        _timeController.text =
+            '${TimeOfDay(hour: expiredDateTime.hour, minute: expiredDateTime.minute).format(context)} (${expiredDateTime.hour.toString().padLeft(2, '0')}:${expiredDateTime.minute.toString().padLeft(2, '0')})';
+        qrData = _qrController.text;
       });
     } catch (e) {
       setState(() {
@@ -64,16 +67,34 @@ class _UpdateQrCodePageState extends State<UpdateQrCodes> {
     }
   }
 
+  Future<void> _selectTime() async {
+    TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: const TimeOfDay(hour: 0, minute: 0),
+    );
+
+    if (picked != null) {
+      setState(() {
+        // Format the time as "HH:mm" (24-hour format)
+        _timeController.text =
+            '${picked.format(context)} (${picked.hour}:${picked.minute.toString().padLeft(2, '0')})';
+      });
+    }
+  }
+
   Future<void> _updateQrCode() async {
     setState(() {
       isLoading = true;
     });
+
+    final timeInParenthesis = _timeController.text.split('(')[1].split(')')[0];
 
     try {
       await firestoreService.updateQrCode(
         _qrController.text,
         _prizeController.text,
         _dateController.text,
+        timeInParenthesis,
         widget.qrCodeId, // Pass the ID to the update method
       );
 
@@ -188,6 +209,29 @@ class _UpdateQrCodePageState extends State<UpdateQrCodes> {
                     controller: _dateController,
                     readOnly: true,
                     onTap: _selectDate,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.cancel_outlined),
+                        onPressed: () {
+                          _timeController.clear();
+                        },
+                      ),
+                      labelText: 'Expired Time',
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                    ),
+                    controller: _timeController,
+                    readOnly: true,
+                    onTap: _selectTime,
                   ),
                 ),
                 Padding(

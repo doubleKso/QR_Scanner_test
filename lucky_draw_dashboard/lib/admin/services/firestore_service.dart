@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class FirestoreService {
   final CollectionReference qrCodes =
@@ -6,45 +7,91 @@ class FirestoreService {
   final CollectionReference users =
       FirebaseFirestore.instance.collection('Users');
 
-  Future<void> addQrCode(String qrData, String prize, String expiredDate) {
+  Future<void> addQrCode(String qrData, String prize, String expiredDate,
+      String expiredTime) async {
     try {
-      final DateTime date = DateTime.parse(expiredDate);
-      if (qrData.isEmpty || prize.isEmpty || expiredDate.isEmpty) {
-        throw Exception("QR data and prize and date cannot be empty.");
+      if (qrData.isEmpty ||
+          prize.isEmpty ||
+          expiredDate.isEmpty ||
+          expiredTime.isEmpty) {
+        throw Exception("QR data, prize, date, and time cannot be empty.");
       }
-      return qrCodes.add({
-        // "id": "AA",
+
+      final DateTime date = DateTime.parse(expiredDate); // From date picker
+      final TimeOfDay time = TimeOfDay(
+        hour: int.parse(expiredTime.split(":")[0]),
+        minute: int.parse(expiredTime.split(":")[1]),
+      ); // From time picker
+
+      final DateTime combinedDateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+
+      // Add to Firestore
+      return qrCodes.doc(qrData).set({
         "availability": true,
         "data": qrData,
         "timestamp": Timestamp.now(),
-        "expiredDate": Timestamp.fromDate(date),
+        "expiredDate":
+            Timestamp.fromDate(combinedDateTime), // Use combined DateTime
         "scannedDate": null,
         "prize": prize,
         "winner": null,
       });
     } catch (e) {
-      throw Exception("$e");
+      throw Exception("Error adding QR code: $e");
     }
   }
 
-  Future<void> updateQrCode(
-      String qrData, String prize, String expiredDate, String qrCodeId) {
-    // String expiredDate, String scannedDate) {
+  Future<void> updateQrCode(String qrData, String prize, String expiredDate,
+      String expiredTime, String qrCodeId) async {
     try {
-      final DateTime date = DateTime.parse(expiredDate);
-      if (qrData.isEmpty || prize.isEmpty || expiredDate.isEmpty) {
-        throw Exception("QR data and prize and date cannot be empty.");
+      // Validate inputs
+      if (qrData.isEmpty ||
+          prize.isEmpty ||
+          expiredDate.isEmpty ||
+          expiredTime.isEmpty) {
+        throw Exception("QR data, prize, date, and time cannot be empty.");
       }
-      return qrCodes.doc(qrCodeId).update({
-        "availability": true,
+
+      final DateTime date = DateTime.parse(expiredDate);
+      final TimeOfDay time = TimeOfDay(
+        hour: int.parse(expiredTime.split(":")[0]),
+        minute: int.parse(expiredTime.split(":")[1]),
+      );
+
+      final DateTime combinedDateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+
+      // Fetch existing document data
+      final docSnapshot = await qrCodes.doc(qrCodeId).get();
+      if (!docSnapshot.exists) {
+        throw Exception("QR Code document not found.");
+      }
+
+      final existingData = docSnapshot.data() as Map<String, dynamic>;
+
+      final updatedData = {
+        "availability": existingData["availability"] ?? true,
         "data": qrData,
-        "expiredDate": Timestamp.fromDate(date),
-        "scannedDate": null,
+        "expiredDate": Timestamp.fromDate(combinedDateTime),
+        "scannedDate": existingData["scannedDate"],
         "prize": prize,
-        "winner": null,
-      });
+        "winner": existingData["winner"],
+      };
+
+      await qrCodes.doc(qrCodeId).update(updatedData);
     } catch (e) {
-      throw Exception("$e");
+      throw Exception("Error updating QR code: $e");
     }
   }
 
@@ -58,9 +105,22 @@ class FirestoreService {
         return data;
       }).toList();
     } catch (e) {
-      print("Error fetching data: $e");
+      print("$e");
       return [];
     }
+  }
+
+  Stream<List<Map<String, dynamic>>> fetchQrCodesAsStream() {
+    return qrCodes
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+    });
   }
 
   Future<Map<String, dynamic>> getQrCodeById(String id) async {

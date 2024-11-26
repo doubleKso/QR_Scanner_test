@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class UpdateUsers extends StatefulWidget {
   final String userId;
-  UpdateUsers({super.key, required this.userId});
+  const UpdateUsers({super.key, required this.userId});
 
   @override
   State<UpdateUsers> createState() => _UpdateUsersState();
@@ -11,6 +11,6 @@ class UpdateUsers extends StatefulWidget {
 class _UpdateUsersState extends State<UpdateUsers> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return const Scaffold();
   }
 }

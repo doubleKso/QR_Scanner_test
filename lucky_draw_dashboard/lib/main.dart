@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
       // home: AdminHome(),
       initialRoute: '/',
       routes: {
-        '/': (context) => AdminHome(), // Your home page
+        '/': (context) => const AdminHome(), // Your home page
         '/readQRCodes': (context) =>
-            ReadQrCodes(), // Define your read QR codes page route
+            const ReadQrCodes(), // Define your read QR codes page route
         // Add other routes here
       },
     );

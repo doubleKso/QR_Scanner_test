@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
+import 'package:intl/intl.dart';
+import 'package:lucky_draw_dashboard/admin/screens/create_qr_codes.dart';
 import 'package:lucky_draw_dashboard/admin/screens/update_users.dart';
+// import 'package:intl/intl.dart';
+// import 'package:lucky_draw_dashboard/admin/screens/update_users.dart';
 import 'package:lucky_draw_dashboard/admin/services/firestore_service.dart';
 
 class UsersScreen extends StatefulWidget {
@@ -55,14 +58,31 @@ class _UsersScreenState extends State<UsersScreen> {
   Widget build(BuildContext context) {
     return Center(
       child: Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: Colors.transparent,
-        //   foregroundColor: Colors.red, // Change color if needed
-        //   title: const Text(
-        //     "Users",
-        //     style: TextStyle(fontSize: 15),
-        //   ),
-        // ),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.red, // Change color if needed
+          title: const Text(
+            "Users",
+            style: TextStyle(fontSize: 15),
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: IconButton(
+                icon: const Icon(Icons.add_outlined),
+                color: Colors.redAccent,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CreateQrCodes(),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
         body: Container(
           padding: const EdgeInsets.all(25.0),
           child: isLoading
@@ -114,13 +134,13 @@ class _UsersScreenState extends State<UsersScreen> {
                             //         fontWeight: FontWeight.bold, fontSize: 14),
                             //   ),
                             // ),
-                            // DataColumn(
-                            //   label: Text(
-                            //     "Created Date",
-                            //     style: TextStyle(
-                            //         fontWeight: FontWeight.bold, fontSize: 14),
-                            //   ),
-                            // ),
+                            DataColumn(
+                              label: Text(
+                                "Created Date",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 14),
+                              ),
+                            ),
                             DataColumn(
                               label: Text(
                                 "Actions",
@@ -138,12 +158,12 @@ class _UsersScreenState extends State<UsersScreen> {
                               DataCell(Text(user['username'] ?? 'N/A')),
                               DataCell(Text(user['email'] ?? 'N/A')),
                               // DataCell(Text(user['role'] ?? 'N/A')),
-                              // DataCell(
-                              //   user['createdDate'] != null
-                              //       ? Text(DateFormat.yMMMMEEEEd()
-                              //           .format(user['createdDate']?.toDate()))
-                              //       : const Center(child: Text('N/A')),
-                              // ),
+                              DataCell(
+                                user['timestamp'] != null
+                                    ? Text(DateFormat.yMMMMEEEEd()
+                                        .format(user['timestamp']?.toDate()))
+                                    : const Center(child: Text('N/A')),
+                              ),
                               DataCell(
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -217,7 +237,8 @@ class _UsersScreenState extends State<UsersScreen> {
                                                 .showSnackBar(
                                               SnackBar(
                                                 backgroundColor: Colors.red,
-                                                duration: Duration(seconds: 1),
+                                                duration:
+                                                    const Duration(seconds: 1),
                                                 content: Text(
                                                     "Error deleting user: $e"),
                                               ),

@@ -40,7 +40,7 @@ class _QrScreensState extends State<QrScreens> {
                           builder: (context) => const CreateQrCodes()),
                     );
                   }),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               buildFilledButton(

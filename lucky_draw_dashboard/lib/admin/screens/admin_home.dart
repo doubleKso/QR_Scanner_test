@@ -40,7 +40,7 @@ class _AdminHomeState extends State<AdminHome> {
       body: Row(
         children: [
           // NavigationRail sidebar
-          SizedBox(height: 100),
+          const SizedBox(height: 100),
           NavigationRail(
             backgroundColor: Colors.white,
             selectedIndex: _selectedIndex,

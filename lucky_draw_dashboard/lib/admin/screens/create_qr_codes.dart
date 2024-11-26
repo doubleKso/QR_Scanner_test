@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucky_draw_dashboard/admin/screens/read_qr_codes.dart';
 import 'package:lucky_draw_dashboard/admin/services/firestore_service.dart';
 import 'package:lucky_draw_dashboard/widgets/widgets.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -16,6 +17,8 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
   final TextEditingController _qrController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _prizeController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
+
   String? errorMessage;
   var uuid = const Uuid();
   bool isLoading = false; // New variable to track loading state
@@ -33,7 +36,7 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
   @override
   void initState() {
     super.initState();
-    _changeQRCode(); // Generate the initial UUID when the widget is created
+    _changeQRCode();
   }
 
   Future<void> _selectDate() async {
@@ -49,21 +52,43 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
     }
   }
 
+  Future<void> _selectTime() async {
+    TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: const TimeOfDay(hour: 0, minute: 0),
+    );
+
+    if (picked != null) {
+      setState(() {
+        // Format the time as "HH:mm" (24-hour format)
+        _timeController.text =
+            '${picked.format(context)} (${picked.hour}:${picked.minute.toString().padLeft(2, '0')})';
+      });
+    }
+  }
+
   Future<void> _submitQrCode() async {
     setState(() {
       isLoading = true;
     });
 
     try {
+      // Extract the time in the parenthesis for Firestore
+      final timeInParenthesis =
+          _timeController.text.split('(')[1].split(')')[0];
+
       await firestoreService.addQrCode(
-        _qrController.text,
-        _prizeController.text,
-        _dateController.text,
+        _qrController.text, // QR data
+        _prizeController.text, // Prize
+        _dateController.text, // Date from date picker
+        timeInParenthesis, // Extracted time in 24-hour format
       );
 
+      // Clear inputs after successful submission
       _changeQRCode();
       _dateController.clear();
       _prizeController.clear();
+      _timeController.clear();
 
       setState(() {
         errorMessage = null;
@@ -82,7 +107,7 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("$errorMessage"),
         backgroundColor: Colors.red,
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
       ));
     } finally {
       setState(() {
@@ -100,6 +125,23 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
           "Create New QR Codes",
           style: TextStyle(fontSize: 15, color: Colors.white),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: IconButton(
+              icon: const Icon(Icons.list),
+              color: Colors.white,
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ReadQrCodes(),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -177,6 +219,29 @@ class _CreateQrCodesState extends State<CreateQrCodes> {
                     controller: _dateController,
                     readOnly: true,
                     onTap: _selectDate,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.cancel_outlined),
+                        onPressed: () {
+                          _timeController.clear();
+                        },
+                      ),
+                      labelText: 'Expired Time',
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                    ),
+                    controller: _timeController,
+                    readOnly: true,
+                    onTap: _selectTime,
                   ),
                 ),
                 Padding(

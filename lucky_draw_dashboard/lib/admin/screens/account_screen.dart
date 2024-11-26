@@ -17,7 +17,7 @@ class _AccountScreenState extends State<AccountScreen> {
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Logged in"),
+        const Text("Logged in"),
         Padding(
             padding: const EdgeInsets.all(25.0),
             child: buildOutlinedButton(
