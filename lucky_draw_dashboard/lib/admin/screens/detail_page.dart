@@ -13,6 +13,8 @@ import 'dart:html' as html;
 class DetailPage extends StatelessWidget {
   final String documentId;
   final ScreenshotController _screenshotController = ScreenshotController();
+  final ScreenshotController _screenshotCardController = ScreenshotController();
+
   DetailPage({super.key, required this.documentId});
 
   Stream<Map<String, dynamic>?> _getDocumentStream() async* {
@@ -66,6 +68,23 @@ class DetailPage extends StatelessWidget {
     });
   }
 
+  void _downloadImageCard(Uint8List imageBytes) {
+    final base64Image = 'data:image/png;base64,${base64Encode(imageBytes)}';
+    final anchor = html.AnchorElement(href: base64Image)
+      ..target = 'blank'
+      ..download = "Card:" + '$documentId'
+      ..click();
+    anchor.remove();
+  }
+
+  void _captureAndDownloadImageCard() {
+    _screenshotCardController.capture().then((Uint8List? imageBytes) {
+      if (imageBytes != null) {
+        _downloadImageCard(imageBytes);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,6 +100,13 @@ class DetailPage extends StatelessWidget {
                 label: "Save QR Code",
                 color: Colors.green,
                 onPressed: _captureAndDownloadImage),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 25),
+            child: buildOutlinedButton(
+                label: "Save Card",
+                color: Colors.green,
+                onPressed: _captureAndDownloadImageCard),
           )
         ],
       ),
@@ -109,114 +135,117 @@ class DetailPage extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.33,
               child: Padding(
                 padding: const EdgeInsets.all(25.0),
-                child: Card(
-                  elevation: 4.0,
-                  color: Colors.red.shade100,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Screenshot(
-                            controller: _screenshotController,
-                            child: QrImageView(
-                              data: data['data'],
-                              version: QrVersions.auto,
-                              embeddedImage: const AssetImage(
-                                  'assets/images/AxraWithBackground.jpg'),
-                              embeddedImageStyle: const QrEmbeddedImageStyle(
-                                  size: Size(30, 30)),
-                              size: 200,
-                              backgroundColor: Colors.white,
+                child: Screenshot(
+                  controller: _screenshotCardController,
+                  child: Card(
+                    elevation: 4.0,
+                    color: Colors.red.shade100,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Screenshot(
+                              controller: _screenshotController,
+                              child: QrImageView(
+                                data: data['data'],
+                                version: QrVersions.auto,
+                                embeddedImage: const AssetImage(
+                                    'assets/images/AxraWithBackground.jpg'),
+                                embeddedImageStyle: const QrEmbeddedImageStyle(
+                                    size: Size(30, 30)),
+                                size: 200,
+                                backgroundColor: Colors.white,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              "Winner: ",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            const SizedBox(height: 20),
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                "Winner: ",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                             ),
-                          ),
-                          Padding(
+                            Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  data['winner'] ?? '-',
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                )),
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                "Created Date: ",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                data['winner'] ?? '-',
+                                DateFormat.yMMMMEEEEd()
+                                    .add_jm()
+                                    .format(createdDate),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                "Prize: ",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(data['prize']),
+                            ),
+                            const SizedBox(height: 10),
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                "Expired Date: ",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                DateFormat.yMMMMEEEEd()
+                                    .add_jm()
+                                    .format(expiredDate),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                data['scannedDate'] != null
+                                    ? "Scanned Date: "
+                                    : 'Scanned Date: -',
                                 style: const TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              )),
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              "Created Date: ",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              DateFormat.yMMMMEEEEd()
-                                  .add_jm()
-                                  .format(createdDate),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                data['scannedDate'] != null
+                                    ? DateFormat.yMMMMEEEEd()
+                                        .add_jm()
+                                        .format(data['scannedDate'].toDate())
+                                    : '-',
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              "Prize: ",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(data['prize']),
-                          ),
-                          const SizedBox(height: 10),
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              "Expired Date: ",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              DateFormat.yMMMMEEEEd()
-                                  .add_jm()
-                                  .format(expiredDate),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              data['scannedDate'] != null
-                                  ? "Scanned Date: "
-                                  : 'Scanned Date: -',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              data['scannedDate'] != null
-                                  ? DateFormat.yMMMMEEEEd()
-                                      .add_jm()
-                                      .format(data['scannedDate'].toDate())
-                                  : '-',
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

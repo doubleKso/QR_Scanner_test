@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+// import 'package:cloud_functions/cloud_functions.dart';
 
 class FirestoreService {
   final CollectionReference qrCodes =
@@ -17,7 +18,7 @@ class FirestoreService {
         throw Exception("QR data, prize, date, and time cannot be empty.");
       }
 
-      final DateTime date = DateTime.parse(expiredDate); // From date picker
+      final DateTime date = DateTime.parse(expiredDate);
       final TimeOfDay time = TimeOfDay(
         hour: int.parse(expiredTime.split(":")[0]),
         minute: int.parse(expiredTime.split(":")[1]),
@@ -95,31 +96,30 @@ class FirestoreService {
     }
   }
 
-  Future<void> updateUser(String username, String email, String userId) async {
+  Future<void> updateUser(
+      String phone, String username, String email, String userId) async {
     try {
-      // Validate inputs
-      if (username.isEmpty ||
-          email.isEmpty ||
-          // phone.isEmpty ||
-          userId.isEmpty) {
-        throw Exception("username, email, phone cannot be empty.");
+      if (username.isEmpty || email.isEmpty || userId.isEmpty) {
+        throw Exception("Username, email, and userId cannot be empty.");
       }
-      // Fetch existing document data
+
       final docSnapshot = await users.doc(userId).get();
       if (!docSnapshot.exists) {
         throw Exception("User document not found.");
       }
 
-      final existingData = docSnapshot.data() as Map<String, dynamic>;
+      final Map<String, dynamic> updatedData = {};
+      if (username.isNotEmpty) updatedData['username'] = username;
+      if (email.isNotEmpty) updatedData['email'] = email;
+      if (phone.isNotEmpty) updatedData['phone'] = phone;
 
-      final updatedData = {
-        "username": existingData["username"] ?? true,
-        "email": existingData["email"],
-      };
-
-      await users.doc(userId).update(updatedData);
+      if (updatedData.isNotEmpty) {
+        await users.doc(userId).update(updatedData);
+      } else {
+        throw Exception("No valid data provided to update.");
+      }
     } catch (e) {
-      throw Exception("Error updating QR code: $e");
+      throw Exception("Error updating user data: $e");
     }
   }
 
@@ -208,5 +208,18 @@ class FirestoreService {
       print("Error fetching data: $e");
       return [];
     }
+  }
+
+  Stream<List<Map<String, dynamic>>> fetchUsersAsStream() {
+    return users
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+    });
   }
 }

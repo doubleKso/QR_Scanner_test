@@ -14,7 +14,7 @@ class _UpdateUsersState extends State<UpdateUsers> {
   final FirestoreService firestoreService = FirestoreService();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _userEmailController = TextEditingController();
-  // final TextEditingController _userPhoneController = TextEditingController();
+  final TextEditingController _userPhoneController = TextEditingController();
   // final TextEditingController _timeController = TextEditingController();
   String? errorMessage;
   bool isLoading = true; // Track loading state
@@ -33,7 +33,7 @@ class _UpdateUsersState extends State<UpdateUsers> {
       setState(() {
         _usernameController.text = userDataMap['username'];
         _userEmailController.text = userDataMap['email'];
-        // _userPhoneController.text = userDataMap['phone'];
+        _userPhoneController.text = userDataMap['phone'];
         // _timeController.text =
         //     '${TimeOfDay(hour: expiredDateTime.hour, minute: expiredDateTime.minute).format(context)} (${expiredDateTime.hour.toString().padLeft(2, '0')}:${expiredDateTime.minute.toString().padLeft(2, '0')})';
         // qrData = _qrController.text;
@@ -56,9 +56,9 @@ class _UpdateUsersState extends State<UpdateUsers> {
 
     try {
       await firestoreService.updateUser(
+        _userPhoneController.text,
         _usernameController.text,
         _userEmailController.text,
-        // _userPhoneController.text,
         widget.userId, // Pass the ID to the update method
       );
 
@@ -115,7 +115,7 @@ class _UpdateUsersState extends State<UpdateUsers> {
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.cancel_outlined),
                         onPressed: () {
-                          _usernameController.clear();
+                          _userEmailController.clear();
                         },
                       ),
                       labelText: 'Email',
@@ -151,29 +151,28 @@ class _UpdateUsersState extends State<UpdateUsers> {
                     controller: _usernameController,
                   ),
                 ),
-                //  Padding(
-                //     padding: const EdgeInsets.symmetric(vertical: 10.0),
-                //     child: TextField(
-                //       maxLength: 50,
-                //       decoration: InputDecoration(
-                //         suffixIcon: IconButton(
-                //           icon: const Icon(Icons.cancel_outlined),
-                //           onPressed: () {
-                //             _usernameController.clear();
-                //           },
-                //         ),
-                //         labelText: 'phone',
-                //         enabledBorder: const OutlineInputBorder(
-                //           borderSide: BorderSide(color: Colors.black),
-                //         ),
-                //         focusedBorder: const OutlineInputBorder(
-                //           borderSide: BorderSide(color: Colors.black),
-                //         ),
-                //       ),
-                //       controller: _userPhoneController,
-                //     ),
-                //   ),
-
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: TextField(
+                    maxLength: 50,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.cancel_outlined),
+                        onPressed: () {
+                          _userPhoneController.clear();
+                        },
+                      ),
+                      labelText: 'phone',
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                    ),
+                    controller: _userPhoneController,
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: buildFilledButton(
