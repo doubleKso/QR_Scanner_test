@@ -95,6 +95,34 @@ class FirestoreService {
     }
   }
 
+  Future<void> updateUser(String username, String email, String userId) async {
+    try {
+      // Validate inputs
+      if (username.isEmpty ||
+          email.isEmpty ||
+          // phone.isEmpty ||
+          userId.isEmpty) {
+        throw Exception("username, email, phone cannot be empty.");
+      }
+      // Fetch existing document data
+      final docSnapshot = await users.doc(userId).get();
+      if (!docSnapshot.exists) {
+        throw Exception("User document not found.");
+      }
+
+      final existingData = docSnapshot.data() as Map<String, dynamic>;
+
+      final updatedData = {
+        "username": existingData["username"] ?? true,
+        "email": existingData["email"],
+      };
+
+      await users.doc(userId).update(updatedData);
+    } catch (e) {
+      throw Exception("Error updating QR code: $e");
+    }
+  }
+
   Future<List<Map<String, dynamic>>> fetchQrCodes() async {
     try {
       QuerySnapshot querySnapshot =
